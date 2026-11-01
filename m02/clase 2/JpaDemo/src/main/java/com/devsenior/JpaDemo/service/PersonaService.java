@@ -1,0 +1,74 @@
+package com.devsenior.JpaDemo.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.devsenior.JpaDemo.model.dto.PersonaDTO;
+import com.devsenior.JpaDemo.model.entity.Persona;
+import com.devsenior.JpaDemo.repository.PersonaRepository;
+
+@Service 
+public class PersonaService {
+
+    private final PersonaRepository repository;
+
+    public PersonaService(PersonaRepository repository){
+        this.repository = repository;
+    }
+
+    public PersonaDTO crear(PersonaDTO dto){
+        Persona Persona = mapToEntity(dto);
+        Persona personaGuardada = repository.save(Persona);
+        return mapToDTO(personaGuardada);
+    }
+
+    public List<PersonaDTO> listar() {
+        return repository.findAll()
+                .stream()
+                .map(entity -> this.mapToDTO(entity))
+                .toList();
+    }
+
+    public PersonaDTO BuscarPorId(Long cedula){
+        Persona persona = repository.findById(cedula).orElseThrow(() -> new
+        RuntimeException("Persona no encontrada"));
+
+        return mapToDTO(persona);
+    }
+
+    public void eliminar(Long cedula){
+        repository.deleteById(cedula);
+    }
+
+    private PersonaDTO mapToDTO(Persona persona){
+        return new PersonaDTO(
+            persona.getCedula(),
+            persona.getNombre(),
+            persona.getTelefono(),
+            persona.getEmail()
+        );
+    }
+
+    private Persona mapToEntity(PersonaDTO dto){
+        return new Persona(
+            dto.getCedula(),
+            dto.getNombre(),
+            dto.getTelefono(),
+            dto.getEmail()
+        );
+    }
+
+    public List<PersonaDTO> buscarPorNombre(String nombre) {
+        return repository.findByNombre(nombre).stream()
+                            .map(entity -> mapToDTO(entity))
+                            .toList();
+    }
+
+    public PersonaDTO buscarPorEmail(String email) {
+        Persona persona = repository.findByEmail(email);
+        PersonaDTO dto = mapToDTO(persona);
+        return dto;
+    }
+}
+    

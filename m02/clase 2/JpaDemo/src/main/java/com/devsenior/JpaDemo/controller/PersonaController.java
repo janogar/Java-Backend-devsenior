@@ -1,0 +1,55 @@
+package com.devsenior.JpaDemo.controller;
+
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
+import com.devsenior.JpaDemo.model.dto.PersonaDTO;
+import com.devsenior.JpaDemo.service.PersonaService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
+
+@RestController 
+@RequestMapping("/api/personas")
+public class PersonaController {
+
+    private final PersonaService service;
+
+    public PersonaController(PersonaService service) {
+        this.service = service;
+    }
+
+    @PostMapping
+    public PersonaDTO crear (@RequestBody PersonaDTO personaDTO){
+        return service.crear(personaDTO);
+    }
+
+    @GetMapping
+    public List<PersonaDTO> listar(){
+        return service.listar();
+    }
+
+    @GetMapping("/{cedula}")
+    public PersonaDTO obtener(@PathVariable Long cedula){
+        return service.BuscarPorId(cedula);
+    }
+
+    @DeleteMapping("/{cedula}")
+    public void eleminar(@PathVariable Long cedula){
+        service.eliminar(cedula);
+    }
+
+    @GetMapping("/buscar")
+    public List<PersonaDTO> buscarPorNombre(@RequestParam String nombre){
+        return service.buscarPorNombre(nombre);
+    }
+    
+    @GetMapping("/email")
+    public PersonaDTO buscarPorEmail(@RequestParam String email) {
+        return service.buscarPorEmail(email);
+    }
+}
